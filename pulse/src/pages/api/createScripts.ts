@@ -10,7 +10,7 @@ export const config = {
 };
 
 
-const prompt = 'Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summaries. You will output the response as {"topics": {"topic_name": string, "topic_summary": string}[]}. Find the 10 most prevelant topics and include a long, in-depth summary of each one. The user will supply the transcript.'
+const prompt = 'Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summaries. You will output the response as {"topics": {"topic_name": string, "topic_summary": string}[]}. Find the 10 most prevelant topics and include a long, in-depth summary of each one. Ensure these summaries at at least 8 sentences long. Ensure The user will supply the transcript.'
 
 const systemMessage = {
   role: "system",
@@ -30,10 +30,9 @@ const handler = async (req) => {
     // @ts-ignore
     const apiMessages = [{role: "user", content: presentation}];
   
-    console.log("API Messages: " + apiMessages)
   
     const payload = {
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo-1106",
       temperature: 0.05,
       messages: [
         systemMessage, 
@@ -55,7 +54,6 @@ const handler = async (req) => {
         return data.json();
     });
     const res = await response.choices
-    console.log(res);
 
     return new Response(JSON.stringify(res), {
       headers: new Headers({
