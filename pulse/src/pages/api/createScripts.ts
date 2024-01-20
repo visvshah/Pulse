@@ -10,7 +10,7 @@ export const config = {
 };
 
 
-const prompt = "Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summarys. You will output the response as {}"
+const prompt = 'Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summaries. You will output the response as {"topics": {"topic_name": string, "topic_summary": string}[]}. Find the 10 most prevelant topics and include a long, in-depth summary of each one. The user will supply the transcript.'
 
 const systemMessage = {
   role: "system",
@@ -19,48 +19,55 @@ const systemMessage = {
 
 // @ts-ignore
 const handler = async (req) => {
-  const { transcript } = (await req.json())
+  const { presentation } = (await req.json())
 
-  if (!transcript) {
-    return new Response("No prompt in the request", { status: 400 });
-  }
-
+  try {
+    if (!presentation) {
+      return new Response("No prompt in the request", { status: 400 });
+    }
   
-  // @ts-ignore
-  const apiMessages = [{role: "user", content: transcript}];
+    
+    // @ts-ignore
+    const apiMessages = [{role: "user", content: presentation}];
+  
+    console.log("API Messages: " + apiMessages)
+  
+    const payload = {
+      model: "gpt-3.5-turbo",
+      temperature: 0.05,
+      messages: [
+        systemMessage, 
+        ...apiMessages, 
+      ],
+    };
+  
+  
+    const response = await fetch("https://api.openai.com/v1/chat/completions",
+    {
+        method: "POST",
+        headers: {
+        // @ts-ignore
+        "Authorization": "Bearer " + (process.env.OPENAI_API_KEY as string),
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+    }).then((data) => {
+        return data.json();
+    });
+    const res = await response.choices
+    console.log(res);
 
-  console.log("API Messages: " + apiMessages)
-
-  const payload = {
-    model: "gpt-3.5-turbo",
-    temperature: 0.05,
-    response_format: { type: "json_object" },
-    messages: [
-      systemMessage, 
-      ...apiMessages, 
-    ],
-  };
-
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions",
-  {
-      method: "POST",
-      headers: {
-      // @ts-ignore
-      "Authorization": "Bearer " + (process.env.OPENAI_API_KEY as string),
-      "Content-Type": "application/json"
-  },
-  body: JSON.stringify(payload)
-  }).then((data) => {
-      return data.json();
-  });
-
-  console.log(response);
-  return new Response(response.choices, {
-    headers: new Headers({
-      'Cache-Control': 'no-cache',
-    }),
-  });
+    return new Response(JSON.stringify(res), {
+      headers: new Headers({
+        'Cache-Control': 'no-cache',
+      }),
+    });
+  }
+  catch (e: any) {
+    console.log(e);
+    return new Response(e.message || "Something went wrong", { status: 500 });
+  }
+ 
 };
 
 export default handler;
