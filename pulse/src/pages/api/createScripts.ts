@@ -1,4 +1,4 @@
-import { OpenAIStream, OpenAIStreamPayload} from "../../utils/OpenAIStream";
+// @ts-ignore
 import { env } from "~/env.js";
 
 if (!process.env.OPENAI_API_KEY) {
@@ -9,58 +9,54 @@ export const config = {
   runtime: "edge",
 };
 
-interface ChatGPTMessage {
-  sender: string;
-  message: string;
-}
-const prompt = " "
+
+const prompt = "Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summarys. You will output the response as {}"
 
 const systemMessage = {
   role: "system",
   content: prompt,
 };
 
-const handler = async (req: Request): Promise<Response> => {
-  const { messages } = (await req.json()) as {
-    messages?: ChatGPTMessage[];
-    itineraryToBeEdited?: string;
-  };
+// @ts-ignore
+const handler = async (req) => {
+  const { transcript } = (await req.json())
 
-  if (!messages) {
+  if (!transcript) {
     return new Response("No prompt in the request", { status: 400 });
   }
 
-  // Update the system message content with tripjson
   
-  const apiMessages = messages.map((messageObject) => {
-    let role = "";
-    if (messageObject.sender === "ChatGPT") {
-      role = "assistant";
-    } else {
-      role = "user";
-    }
-    return { role: role, content: messageObject.message };
-  });
+  // @ts-ignore
+  const apiMessages = [{role: "user", content: transcript}];
 
-  
+  console.log("API Messages: " + apiMessages)
 
-  // Get the request body set up with the model we plan to use
-  // and the messages which we formatted above. We add a system message in the front to
-  // determine how we want chatGPT to act.
   const payload = {
     model: "gpt-3.5-turbo",
     temperature: 0.05,
-    stream: true,
+    response_format: { type: "json_object" },
     messages: [
-      systemMessage, // The system message DEFINES the logic of our chatGPT
-      ...apiMessages, // The messages from our chat with ChatGPT
+      systemMessage, 
+      ...apiMessages, 
     ],
   };
 
-  const stream = await OpenAIStream(payload);
 
-  // return stream response (SSE)
-  return new Response(stream, {
+  const response = await fetch("https://api.openai.com/v1/chat/completions",
+  {
+      method: "POST",
+      headers: {
+      // @ts-ignore
+      "Authorization": "Bearer " + (process.env.OPENAI_API_KEY as string),
+      "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+  }).then((data) => {
+      return data.json();
+  });
+
+  console.log(response);
+  return new Response(response.choices, {
     headers: new Headers({
       'Cache-Control': 'no-cache',
     }),
@@ -68,3 +64,5 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 export default handler;
+
+
