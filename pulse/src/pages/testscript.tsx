@@ -32,7 +32,7 @@ export default function Home() {
         setText(JSON.parse(res) as Summaries);
         const summaries = JSON.parse(res).topics;
         console.log(summaries.length);
-
+        setScript([]);
         for (let i = 0; i < summaries.length; i++) {
           const topic_name = summaries[i]?.topic_name as string;
           const topic_summary = summaries[i]?.topic_summary as string;
@@ -50,7 +50,11 @@ export default function Home() {
           console.log(result2)
           const res2 = result2[0].message.content;
           console.log(i + ": " + res2)
-          script.push({topic_name, res2});
+          
+          setScript((prevScripts) => [
+            ...prevScripts,
+            { topic_name, topic_script: res2 },
+          ]);
         }
       }
     } catch (error) {
@@ -77,16 +81,16 @@ export default function Home() {
           </div>
         ))}
       </div>
-      <div className="flex bg-slate-300 w-[100vw] h-[50vh]">
+      <div className="flex flex-col bg-slate-500 w-[100vw] h-[50vh] overflow-scroll">
         {script.map((obj) => (
-          <div className="">
-          <h1>{obj.topic_name}</h1>
-          <p>{obj.topic_script}</p>
+          <div className="flex flex-row">
+            <p><b>{obj.topic_name}</b>: {obj.topic_script}</p>
           </div>
         ))}
       </div>
+    
       
-      
+  
     </div>
   );
 }
