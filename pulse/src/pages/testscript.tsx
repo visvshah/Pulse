@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
+import { useEdgeStore } from '../lib/edgestore';
 import { string } from "zod";
 
 interface Summaries {
@@ -11,7 +12,9 @@ interface Summaries {
 export default function Home() {
   const [text, setText] = useState<Summaries>({topics:[]});
   const [presentation, setpresentation] = useState("");
-  const [script, setScript] = useState<Summaries>([{topic_name: "Test", topic_script: "Test Script"}, ]);
+  const [script, setScript] = useState<Summaries>([]);
+  const [file, setFile] = React.useState<File>();
+  const { edgestore } = useEdgeStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the default form submission behavior
@@ -62,6 +65,48 @@ export default function Home() {
     }
   };
 
+  const uploadSlides = async () => {
+    if (file) {
+      const res = await edgestore.publicFiles.upload({
+        file,
+        onProgressChange: (progress) => {
+          // you can use this to show a progress bar
+          console.log(progress);
+        },
+        options: {
+          temporary: true,
+        },
+      });
+      // you can run some server action or api here
+      // to add the necessary data to your database
+      console.log(res);
+      //setUrl(res.url);
+      let url = res.url;
+      console.log(url)
+
+      try {
+        const response = await fetch('/api/readFile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({url}),
+        });
+        console.log(response)
+  
+        if (response.ok) {
+          const result = await response.json();
+          console.log('API Response:', result.text);
+        } else {
+          console.error('API Error:', response.statusText);
+        }
+      } catch (error: any) {
+        console.error('API Request Error:', error!.message);
+      } 
+  
+    }
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit} >
@@ -74,14 +119,30 @@ export default function Home() {
         <br />
         <button className = "m-5" type="submit">Submit</button>
       </form>
+      <div className="flex w-full h-32 items-center justify-center flex-row">
+        <input
+          type="file"
+          onChange={(e) => {
+            setFile(e.target.files?.[0]);
+          }}
+        />
+        <button
+          onClick={uploadSlides}
+        >
+          Upload
+        </button>
+      </div>
+
       <div className="flex flex-col bg-slate-500 w-[100vw] h-[50vh] overflow-scroll">
+        <h1>Summaries</h1>
         {text.topics.map((obj) => (
           <div className="flex flex-row">
             <p><b>{obj.topic_name}</b>: {obj.topic_summary}</p>
           </div>
         ))}
       </div>
-      <div className="flex flex-col bg-slate-500 w-[100vw] h-[50vh] overflow-scroll">
+      <div className="flex flex-col bg-slate-200w-[100vw] h-[50vh] overflow-scroll">
+      <h1 className="m-3">Scripts</h1>
         {script.map((obj) => (
           <div className="flex flex-row">
             <p><b>{obj.topic_name}</b>: {obj.topic_script}</p>
