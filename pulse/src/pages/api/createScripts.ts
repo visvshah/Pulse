@@ -10,8 +10,8 @@ export const config = {
 };
 
 
-const prompt1 = `Imagine you're creating a captivating TikTok video script to explain`
-const prompt2 = `. Your goal is to make it engaging, informative, and suitable for a short video format. Ensure the script is easy to understand and has a good flow. The script should be concise and suitable for a TikTok video duration. Use the following topic summary to guide the creation of the script: `
+const prompt1 = `Imagine you're creating a captivating social media video script to explain `
+const prompt2 = `. Your goal is to make it engaging and informative. Ensure the script is easy to understand and has a good flow. Make each script lengthy, being around 6 sentences. Do not include any narration or stage directions. Do not include emojis, hashtags, or the name TikTok in your script. Use the following topic summary to guide the creation and content of the script: `
 
 const systemMessage = {
   role: "system",
