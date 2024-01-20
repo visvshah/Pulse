@@ -17,11 +17,10 @@ function Testfileinput() {
 
     const uploadToDatabase = (url) => {
         let docData = {
-            mostRecentUploadURL: url,
-            username: "jasondubon"
+            video_link: url,
         }
-        const userRef = doc(db, "users", docData.username)
-        setDoc(userRef, docData, {merge: true}).then(() => {
+        const ref = doc(db, "test_videos", "1")
+        setDoc(ref, docData, {merge: true}).then(() => {
             console.log("successfully updated DB")
         }).catch((error) => {
             console.log("errrror")
