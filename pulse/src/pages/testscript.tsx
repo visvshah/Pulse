@@ -44,12 +44,13 @@ export default function Home() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({topic_name, topic_summary}),
+            body: JSON.stringify({ topic_name, topic_summary }) ,
           });
           const result2 = await response2.json();
+          console.log(result2)
           const res2 = result2[0].message.content;
           console.log(i + ": " + res2)
-          script.append({topic_name, res2});
+          script.push({topic_name, res2});
         }
       }
     } catch (error) {

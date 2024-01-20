@@ -6,8 +6,8 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 export const config = {
-    runtime: "edge",
-  };
+  runtime: "edge",
+};
 
 
 const prompt1 = `Imagine you're creating a captivating TikTok video script to explain`
@@ -20,19 +20,13 @@ const systemMessage = {
 
 // @ts-ignore
 const handler = async (req) => {
-    console.log(req)
-  const topic_name = await req.body.topic_name;
-  const topic_summary = await req.body.topic_summary;
+  const { topic_name, topic_summary} = await req.json()
 
   try {
-    if (!topic_name) {
-      return new Response("No prompt in the request", { status: 400 });
-    }
-  
-    const prompt = prompt1 + topic_name + prompt2 + topic_summary;
-    systemMessage.content = prompt;
+    systemMessage.content = prompt1 + topic_name + prompt2 + topic_summary;
+    
     // @ts-ignore
-    const apiMessages = [{role: "user", content: prompt}];
+    const apiMessages = [{role: "user", content: systemMessage.content}];
   
   
     const payload = {
@@ -57,8 +51,9 @@ const handler = async (req) => {
     }).then((data) => {
         return data.json();
     });
+    console.log(response)
     const res = await response.choices
-
+    console.log("SCRIPTS:" + res)
     return new Response(JSON.stringify(res), {
       headers: new Headers({
         'Cache-Control': 'no-cache',

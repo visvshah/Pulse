@@ -56,6 +56,7 @@ const handler = async (req) => {
     });
     const res = await response.choices
 
+    console.log("Summary:" + res)
     return new Response(JSON.stringify(res), {
       headers: new Headers({
         'Cache-Control': 'no-cache',
