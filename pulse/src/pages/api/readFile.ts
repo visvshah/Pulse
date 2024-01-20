@@ -35,7 +35,7 @@ const handler: NextApiHandler = async (req, res) => {
 
 const extractText = async (buffer: ArrayBuffer): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
-    textract.fromBufferWithName('file.pptx', Buffer.from(buffer), (error, text) => {
+    textract.fromBufferWithName('file.pdf', Buffer.from(buffer), (error, text) => {
       if (error) {
         reject(error);
       } else {
