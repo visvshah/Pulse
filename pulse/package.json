@@ -10,9 +10,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
     "@edgestore/react": "^0.1.6",
     "@edgestore/server": "^0.1.6",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@t3-oss/env-nextjs": "^0.7.1",
+    "firebase": "^10.7.2",
+    "framer-motion": "^10.18.0",
     "lucide-react": "^0.312.0",
     "multiparty": "^4.2.3",
     "next": "^13.5.6",
