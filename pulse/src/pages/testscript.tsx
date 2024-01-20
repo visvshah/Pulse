@@ -18,17 +18,18 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the default form submission behavior
-    createScripts();
+    createScripts(presentation);
   };
 
-  const createScripts = async() => {
+  const createScripts = async(inp: string) => {
     try {
+      console.log("Create Scripts Presentation: "+ inp)
     const response = await fetch("/api/createSummary", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ presentation }) ,
+      body: JSON.stringify({ presentation: inp }) ,
     });
 
 
@@ -68,6 +69,11 @@ export default function Home() {
     console.error("Error:", error);
   }
 }
+
+const reallySetPresentation = async (p: string) => {
+  setpresentation(p);
+}
+
   const uploadSlides = async () => {
     if (file) {
       const res = await edgestore.publicFiles.upload({
@@ -101,8 +107,10 @@ export default function Home() {
           const result = await response.json();
           console.log('API Response:', result.text);
 
-          setpresentation(result.text);
-          handleSubmit();
+          //setpresentation(result.text);
+          await reallySetPresentation(result.text);
+          //handleSubmit();
+          await createScripts(result.text);
         } else {
           console.error('API Error:', response.statusText);
         }

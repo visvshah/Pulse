@@ -36,25 +36,25 @@ export default function Page() {
             let url = res.url;
             console.log(url)
 
-            try {
-              const response = await fetch('/api/readFile', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({url}),
-              });
-              console.log(response)
+            // try {
+            //   const response = await fetch('/api/readFile', {
+            //     method: 'POST',
+            //     headers: {
+            //       'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({url}),
+            //   });
+            //   console.log(response)
         
-              if (response.ok) {
-                const result = await response.json();
-                console.log('API Response:', result.text);
-              } else {
-                console.error('API Error:', response.statusText);
-              }
-            } catch (error: any) {
-              console.error('API Request Error:', error!.message);
-            } 
+            //   if (response.ok) {
+            //     const result = await response.json();
+            //     console.log('API Response:', result.text);
+            //   } else {
+            //     console.error('API Error:', response.statusText);
+            //   }
+            // } catch (error: any) {
+            //   console.error('API Request Error:', error!.message);
+            // } 
         
           }
         }}
