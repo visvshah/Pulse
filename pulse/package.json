@@ -10,17 +10,27 @@
     "start": "next start"
   },
   "dependencies": {
+    "@edgestore/react": "^0.1.6",
+    "@edgestore/server": "^0.1.6",
     "@t3-oss/env-nextjs": "^0.7.1",
+    "lucide-react": "^0.312.0",
+    "multiparty": "^4.2.3",
     "next": "^13.5.6",
+    "next-connect": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "tailwind-merge": "^2.2.0",
+    "textract": "^2.5.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.7",
+    "@types/multiparty": "^0.0.36",
     "@types/node": "^18.17.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "@types/textract": "^2.4.5",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "autoprefixer": "^10.4.14",
