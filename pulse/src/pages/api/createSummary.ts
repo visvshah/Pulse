@@ -10,7 +10,7 @@ export const config = {
 };
 
 
-const prompt = "Your purpose is to write a summary of a slideshow presentation that is converted to text for your convenience. "
+const prompt = 'You are a client that organizes information from college lecture transcripts. Given a transcript from a user, extract 5 essential topics and provide detailed summaries for each topic. Ensure that the summaries capture the key information and any important supporting information.  Ensure each topic summary us lengthy and at least 6 sentences long. You will output the response as a json in the following format: {"topics": {"topic_name": string, "topic_summary": string}[]}. '
 
 const systemMessage = {
   role: "system",
@@ -19,10 +19,9 @@ const systemMessage = {
 
 // @ts-ignore
 const handler = async (req) => {
-  const { presentation } = (await req.json())
+  const { presentation } = await req.json()
 
   try {
-    console.log("Presentation: " + presentation)
     if (!presentation) {
       return new Response("No prompt in the request", { status: 400 });
     }
@@ -31,11 +30,11 @@ const handler = async (req) => {
     // @ts-ignore
     const apiMessages = [{role: "user", content: presentation}];
   
-    console.log("API Messages: " + apiMessages)
   
     const payload = {
-      model: "gpt-3.5-turbo",
+      model: "gpt-3.5-turbo-1106",
       temperature: 0.05,
+      response_format: { type: "json_object" },
       messages: [
         systemMessage, 
         ...apiMessages, 
@@ -56,8 +55,8 @@ const handler = async (req) => {
         return data.json();
     });
     const res = await response.choices
-    console.log(res);
 
+    console.log("Summary:" + res)
     return new Response(JSON.stringify(res), {
       headers: new Headers({
         'Cache-Control': 'no-cache',

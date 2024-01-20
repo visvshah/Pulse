@@ -1,4 +1,4 @@
-import { OpenAIStream, OpenAIStreamPayload} from "../../utils/OpenAIStream";
+// @ts-ignore
 import { env } from "~/env.js";
 
 if (!process.env.OPENAI_API_KEY) {
@@ -9,62 +9,64 @@ export const config = {
   runtime: "edge",
 };
 
-interface ChatGPTMessage {
-  sender: string;
-  message: string;
-}
-const prompt = " "
+
+const prompt1 = `Imagine you're creating a captivating social media video script to explain `
+const prompt2 = `. Your goal is to make it engaging and informative. Ensure the script is easy to understand and has a good flow. Make each script lengthy, being around 6 sentences. Do not include any narration or stage directions. Do not include emojis, hashtags, or the name TikTok in your script. Use the following topic summary to guide the creation and content of the script: `
 
 const systemMessage = {
   role: "system",
-  content: prompt,
+  content: "",
 };
 
-const handler = async (req: Request): Promise<Response> => {
-  const { messages } = (await req.json()) as {
-    messages?: ChatGPTMessage[];
-    itineraryToBeEdited?: string;
-  };
+// @ts-ignore
+const handler = async (req) => {
+  const { topic_name, topic_summary} = await req.json()
 
-  if (!messages) {
-    return new Response("No prompt in the request", { status: 400 });
+  try {
+    systemMessage.content = prompt1 + topic_name + prompt2 + topic_summary;
+    
+    // @ts-ignore
+    const apiMessages = [{role: "user", content: systemMessage.content}];
+  
+  
+    const payload = {
+      model: "gpt-3.5-turbo-1106",
+      temperature: 0.05,
+      messages: [
+        systemMessage, 
+        ...apiMessages, 
+      ],
+    };
+  
+  
+    const response = await fetch("https://api.openai.com/v1/chat/completions",
+    {
+        method: "POST",
+        headers: {
+        // @ts-ignore
+        "Authorization": "Bearer " + (process.env.OPENAI_API_KEY as string),
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+    }).then((data) => {
+        return data.json();
+    });
+    console.log(response)
+    const res = await response.choices
+    console.log("SCRIPTS:" + res)
+    return new Response(JSON.stringify(res), {
+      headers: new Headers({
+        'Cache-Control': 'no-cache',
+      }),
+    });
   }
-
-  // Update the system message content with tripjson
-  
-  const apiMessages = messages.map((messageObject) => {
-    let role = "";
-    if (messageObject.sender === "ChatGPT") {
-      role = "assistant";
-    } else {
-      role = "user";
-    }
-    return { role: role, content: messageObject.message };
-  });
-
-  
-
-  // Get the request body set up with the model we plan to use
-  // and the messages which we formatted above. We add a system message in the front to
-  // determine how we want chatGPT to act.
-  const payload = {
-    model: "gpt-3.5-turbo",
-    temperature: 0.05,
-    stream: true,
-    messages: [
-      systemMessage, // The system message DEFINES the logic of our chatGPT
-      ...apiMessages, // The messages from our chat with ChatGPT
-    ],
-  };
-
-  const stream = await OpenAIStream(payload);
-
-  // return stream response (SSE)
-  return new Response(stream, {
-    headers: new Headers({
-      'Cache-Control': 'no-cache',
-    }),
-  });
+  catch (e: any) {
+    console.log(e);
+    return new Response(e.message || "Something went wrong", { status: 500 });
+  }
+ 
 };
 
 export default handler;
+
+
