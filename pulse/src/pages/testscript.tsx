@@ -74,6 +74,9 @@ const reallySetPresentation = async (p: string) => {
   setpresentation(p);
 }
 
+
+
+
   const uploadSlides = async () => {
     if (file) {
       const res = await edgestore.publicFiles.upload({
@@ -121,6 +124,47 @@ const reallySetPresentation = async (p: string) => {
     }
   }
 
+
+  const uploadAudio = async () => {
+    if (file) {
+      const res = await edgestore.publicFiles.upload({
+        file,
+        onProgressChange: (progress) => {
+          // you can use this to show a progress bar
+          console.log(progress);
+        },
+        options: {
+          temporary: true,
+        },
+      });
+      // you can run some server action or api here
+      // to add the necessary data to your database
+      console.log(res);
+      //setUrl(res.url);
+      let url = res.url;
+      console.log(url)
+      let text = "";
+      try {
+        const requestUrl = "http://localhost:5000/transcribe?link=" + url;
+        const response = await fetch(requestUrl);
+
+          if (response.ok) {
+            const result = await response.json();
+            text = result.text;
+            console.log('Transcription result:', result.text);
+            await createScripts(result.text);
+          } else {
+            console.error(`Error: ${response.status}, ${await response.text()}`);
+          }
+      } catch (error: any) {
+        console.error('API Request Error:', error!.message);
+      } 
+
+
+  
+    }
+  }
+
   return (
     <div>
       <form onSubmit={handleSubmit} >
@@ -143,7 +187,22 @@ const reallySetPresentation = async (p: string) => {
         <button
           onClick={uploadSlides}
         >
-          Upload
+          Upload Slides
+        </button>
+      </div>
+
+
+      <div className="flex w-full h-32 items-center justify-center flex-row">
+        <input
+          type="file"
+          onChange={(e) => {
+            setFile(e.target.files?.[0]);
+          }}
+        />
+        <button
+          onClick={uploadAudio}
+        >
+          Upload Audio
         </button>
       </div>
 

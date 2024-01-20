@@ -48,10 +48,16 @@ class Wav2LipModel:
         subprocess.run(["mkdir", "temp"])
         subprocess.run(["python", "Wav2Lip.py"])
 
+        # try:
         with open(output_file_path, 'rb') as output_file:
             result_video_bytes = output_file.read()
-
         return result_video_bytes
+        # except:
+        # with open("temp/faulty_frame.jpg", 'rb') as output_file:
+        #     result_video_bytes = output_file.read()
+        # return result_video_bytes
+
+        
     
     @method()
     def run_whisper(self, audio_bytes: bytes) -> dict:
@@ -60,3 +66,23 @@ class Wav2LipModel:
             audio_file.write(audio_bytes)
         return self.whisper_model.transcribe(audio_path)
         
+
+# @stub.local_entrypoint()
+# def main(
+#     video_path="/Users/sarthakmangla/code/Pulse/python/deepfakes/serena/serena_video1.mp4",
+#     audio_path="/Users/sarthakmangla/code/Pulse/python/output.mp3",
+# ):
+    
+
+#     with open(video_path, "rb") as video_file:
+#         input_video_bytes = video_file.read()
+#     with open(audio_path, "rb") as audio_file:
+#         input_audio_bytes = audio_file.read()
+#     output_video_bytes = Wav2LipModel().inference.remote(
+#         input_video_bytes, input_audio_bytes)
+
+
+#     output_path = Path(__file__).parent / "out.mp4"
+#     print(f"Saving it to {output_path}")
+#     with open(output_path, "wb") as f:
+#         f.write(output_video_bytes)
