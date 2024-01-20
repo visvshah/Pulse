@@ -10,7 +10,7 @@ export const config = {
 };
 
 
-const prompt = 'Your sole purpose is to take a transcript from a school lesson and simplify it into topics and summaries. You will output the response as {"topics": {"topic_name": string, "topic_summary": string}[]}. Find the 10 most prevelant topics and include a long, in-depth summary of each one. Ensure these summaries at at least 8 sentences long. Ensure The user will supply the transcript.'
+const prompt = 'You are a client that organizes information from college lecture transcripts. Given a transcript from a user, extract 5 essential topics and provide detailed summaries for each topic. Ensure that the summaries capture the key information and any important supporting information.  Ensure each topic summary us lengthy and at least 6 sentences long. You will output the response as a json in the following format: {"topics": {"topic_name": string, "topic_summary": string}[]}. '
 
 const systemMessage = {
   role: "system",
@@ -19,7 +19,7 @@ const systemMessage = {
 
 // @ts-ignore
 const handler = async (req) => {
-  const { presentation } = (await req.json())
+  const { presentation } = await req.json()
 
   try {
     if (!presentation) {
@@ -34,6 +34,7 @@ const handler = async (req) => {
     const payload = {
       model: "gpt-3.5-turbo-1106",
       temperature: 0.05,
+      response_format: { type: "json_object" },
       messages: [
         systemMessage, 
         ...apiMessages, 
