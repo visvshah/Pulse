@@ -23,7 +23,29 @@ export default function Page() {
       />
       <button
         onClick={async () => {
-          const res = await fetch("http://localhost:3000/api/pullLessons");
+          const res = await fetch("api/createLesson", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              "topics": [
+                {
+                  "topic_name": "Computer Science",
+                  "topic_summary": "Programming basics",
+                  "topic_script": "Learn the fundamentals of programming and coding.",
+                  "video_link": "https://example.com/computer_science_video"
+                },
+                {
+                  "topic_name": "Geography",
+                  "topic_summary": "World geography",
+                  "topic_script": "Explore the geography of different countries and continents.",
+                  "video_link": "https://example.com/geography_video"
+                }
+              ],
+              "userid": "user3@example.com"
+            }),
+          });
           const json = await res.json();
           console.log(json);
           // console.log(lessons);
