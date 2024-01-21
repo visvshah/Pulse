@@ -6,8 +6,10 @@ import Head from 'next/head';
 import { Spinner} from '@chakra-ui/react';
 import { FaFileAudio } from "react-icons/fa";
 import { BsFiletypePpt } from "react-icons/bs";
+import { auth } from "~/utils/firebase";
 
 interface Summaries {
+  lesson_title: string,
   topics: {
     topic_name: string,
     topic_summary: string
@@ -22,9 +24,9 @@ const LandingPage = () => {
   // const [file, setFile] = React.useState<File>();
   const { edgestore } = useEdgeStore();
   const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Test");
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [selectedName, setSelectedName] = useState("")
-
+  const user = auth.currentUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the default form submission behavior
@@ -47,16 +49,23 @@ const LandingPage = () => {
     if (response.status === 200) {
       const result = await response.json();
       const res = result[0].message.content
-    
-      setText(JSON.parse(res) as Summaries);
-      const summaries = JSON.parse(res).topics;
-      // console.log(summaries.length);
+      
+      const parsedRes = JSON.parse(res);
+      console.log("Res: " + JSON.stringify(parsedRes));
+      setText(parsedRes as Summaries);
+      const lesson_title = parsedRes.lesson_title
+      const summaries = parsedRes.topics;
+      console.log("Summary: " + JSON.stringify(summaries));
       setScript([]);
       console.log(summaries.length + " Summaries/Topics Generated!");
       setLoadingMessage(summaries.length + " Summaries/Topics Generated!");
+      const lesson = {
+        lesson_name: lesson_title,
+        userid: user?.email,
+        topics: []
+      }
       for (let i = 0; i < summaries.length; i++) {
-        console.log("Topic #" + (summaries.length + 1));
-        
+        console.log("Topic #" + (i + 1));
         const topic_name = summaries[i]?.topic_name as string;
         const topic_summary = summaries[i]?.topic_summary as string;
         console.log("Name: " + topic_name);
@@ -78,6 +87,15 @@ const LandingPage = () => {
         const url = "http://localhost:5000/getvideo?" + params;
         const response3 = await fetch(url)
         console.log(response3);
+
+        const topic = {
+          topic_name, 
+          topic_summary,
+          topic_script: res2,
+          video_link: response3,
+        }
+        lesson.topics.push(topic);
+        setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);
         setScript((prevScripts) => [
           ...prevScripts,
           { topic_name, topic_script: res2 },
@@ -86,12 +104,21 @@ const LandingPage = () => {
           ...prevScripts,
           { topic_name, topic_script: res2 },
         ]);
+
+
       }
+      const dbres = await fetch("api/createLesson", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(lesson),
+      });
     }
   } catch (error) {
     console.error("Error:", error);
   }
-  setLoadingMessage("Finished creating scripts! Generating Videos Now...");
+  setLoadingMessage("Finsihed Creating All Videos!");
 }
 
 const reallySetPresentation = async (p: string) => {

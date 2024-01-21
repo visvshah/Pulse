@@ -253,7 +253,7 @@ def generate_deepfake(script):
     }
     headers = {
       "Content-Type": "application/json",
-      "xi-api-key": os.getenv('ELEVEN_API_KEY')
+      "xi-api-key": "9a3db95271bcc0aef2c8f83b770e97d3"
     }
     response = requests.request("POST", url, json=payload, headers=headers)
     with open('./output/output.mp3', 'wb') as f:
