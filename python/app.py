@@ -313,7 +313,11 @@ def getvideo():
   vid_id = uuid0.generate()
   blob = upload_file("./output/output.mp4", f"videos/{vid_id}.mp4")
   # push to firebase
-  return blob
+  out ={  
+    "url": blob
+  }  
+  json_out = json.dumps(out, indent = 4) 
+  return json_out
 
 @app.route('/transcribe', methods=["GET", "POST"])
 def transcript():
