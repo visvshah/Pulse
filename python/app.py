@@ -16,13 +16,13 @@ import cv2
 import math
 from pydub import AudioSegment
 from tiktok import make_audio
-from firebase_upload import upload_file
+from firebase_upload import init_firebase, upload_file
 CHUNK_SIZE = 1024
 
 app = Flask(__name__)
 CORS(app)
 
-voices = ["Elon", "Swift", "Obama", "Trump"]
+voices = ["Elon", "Swift", "Obama", "Trump", "Jobs", "Serena"]
 
 voiceIds = {
   "Elon": "8sHPROQxTCYRn78WBEXm",
@@ -311,7 +311,7 @@ def getvideo():
   else:
     generate_deepfake(request.args.get("text"))
   vid_id = uuid0.generate()
-  blob = upload_file("./output/output.mp4", f"videos/{vid_id}")
+  blob = upload_file("./output/output.mp4", f"videos/{vid_id}.mp4")
   # push to firebase
   return blob
 
@@ -339,6 +339,7 @@ def home():
     return "hello"
 
 if __name__ == "__main__":
+    init_firebase()
     app.run(host= "0.0.0.0", debug=True)
 
 

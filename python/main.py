@@ -31,7 +31,8 @@ class Wav2LipModel:
         # empty for now
         self.whisper_model = whisper.load_model("base")
         return 0
-
+    
+    @method()
     def inference(self, video_bytes: bytes, audio_bytes: bytes) -> bytes:
         video_path = '/tmp/video.mp4'
         audio_path = '/tmp/audio.mp3'

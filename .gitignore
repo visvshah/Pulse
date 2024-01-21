@@ -1,3 +1,5 @@
+.DS_Store
+python/.DS_Store
 python/output
 python/__pycache__
 python/.env
