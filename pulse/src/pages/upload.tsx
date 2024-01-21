@@ -1,13 +1,18 @@
-'use client';
- 
+//@ts-nocheck
 import * as React from 'react';
 import { useEdgeStore } from '../lib/edgestore';
+import { db} from '~/utils/firebase';
+import { collection, getDocs } from "firebase/firestore";
  
 export default function Page() {
   const [file, setFile] = React.useState<File>();
   const { edgestore } = useEdgeStore();
   //const [url, setUrl] = React.useState<string>();
- 
+  // const db = app.firestore();
+  // const [lessons, lessonsLoading, lessonsError] = useCollection(
+  //   db.collection("lessons"),
+  //   {}
+  // );
   return (
     <div>
       <input
@@ -18,7 +23,28 @@ export default function Page() {
       />
       <button
         onClick={async () => {
-          if (file) {
+          const lessonsRef = collection(db, "lessons");
+          getDocs(lessonsRef).then((snapshot) => {
+            snapshot.docs.forEach((doc) => {
+              console.log(doc.data());
+            });
+          });
+          // console.log(lessons);
+          //   const lessonsRef = sRef(db, 'lessons')
+            
+          // console.log("Lessons ref: " + lessonsRef)
+          // get(lessonsRef).then((snapshot) => {
+          //   if (snapshot.exists()) {
+          //     console.log("Works!");
+          //     console.log(snapshot.val());
+          //   } else {
+          //     console.log("No data available");
+          //   }
+          // }).catch((error) => {
+          //   console.error(error);
+          // }
+          // );
+          if (false) {
             const res = await edgestore.publicFiles.upload({
               file,
               onProgressChange: (progress) => {
