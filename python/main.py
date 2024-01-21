@@ -22,7 +22,7 @@ image = (
 
 stub = Stub("wav2lip-simple", image=image)
 
-@stub.cls(gpu=gpu.A10G(), container_idle_timeout=240)
+@stub.cls(gpu=modal.gpu.A100(memory=80), container_idle_timeout=240)
 class Wav2LipModel:
     def __enter__(self):
         self.setup_dependencies()
@@ -32,7 +32,6 @@ class Wav2LipModel:
         self.whisper_model = whisper.load_model("base")
         return 0
 
-    @method()
     def inference(self, video_bytes: bytes, audio_bytes: bytes) -> bytes:
         video_path = '/tmp/video.mp4'
         audio_path = '/tmp/audio.mp3'

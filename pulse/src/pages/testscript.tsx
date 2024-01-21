@@ -58,7 +58,10 @@ export default function Home() {
         console.log(result2)
         const res2 = result2[0].message.content;
         console.log(i + ": " + res2)
-        
+        const params = new URLSearchParams({ text: res2 });
+        const url = "http://localhost:5000/getvideo?" + params;
+        const response3 = await fetch(url)
+        console.log(response3);
         setScript((prevScripts) => [
           ...prevScripts,
           { topic_name, topic_script: res2 },
