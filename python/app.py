@@ -1,3 +1,4 @@
+import uuid0
 import os
 from flask import Flask, request
 from flask_cors import CORS
@@ -14,6 +15,8 @@ import numpy
 import cv2
 import math
 from pydub import AudioSegment
+from tiktok import make_audio
+from firebase_upload import upload_file
 CHUNK_SIZE = 1024
 
 app = Flask(__name__)
@@ -231,16 +234,16 @@ def add_tweet(final_vid, audio_file, path_tweet, tweet):
 
   return final_vid
 
-def generate_deepfake():
+def generate_deepfake(script):
     whichVoice = random.choice(voices)
     whichVideo = random.choice(voiceFiles[whichVoice])
+    print(whichVoice, whichVideo)
     vidPath = f"deepfakes/{whichVoice.lower()}/{whichVoice.lower()}_video{whichVideo}.mp4"
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voiceIds[whichVoice]}"
 
     payload = {
         "model_id": "eleven_multilingual_v2",
-        # "text": request.args.get("text"),
-        "text": "Sociology is the scientific study of society, human behavior, and social interactions. It explores the structure, development, and functioning of human societies, analyzing how individuals and groups interact within various social contexts.",
+        "text": script,
         "voice_settings": {
             "similarity_boost": 0.75,
             "stability": 0.5,
@@ -281,8 +284,9 @@ def generate_brainrot(script):
       brainrots.append(x)
   whichBrainrot = "brainrot/" + random.choice(brainrots)
   whichTweet = random.choice(["elon.jpg", "trump.png", "lebron.png"])
+  print(whichBrainrot, whichTweet)
   meme = mp.VideoFileClip(whichBrainrot)
-  audio_file = generate_audio(script)
+  audio_file = make_audio(script)
   audio = mp.AudioFileClip(audio_file)
   reqd_duration = audio.duration
 
@@ -301,7 +305,15 @@ def generate_brainrot(script):
 
 @app.route('/getvideo', methods=["GET", "POST"])
 def getvideo():
-  return request.args.get("text")
+  whichType = random.choice([0, 1])
+  if whichType == 0:
+    generate_brainrot(request.args.get("text"))
+  else:
+    generate_deepfake(request.args.get("text"))
+  vid_id = uuid0.generate()
+  blob = upload_file("./output/output.mp4", f"videos/{vid_id}")
+  # push to firebase
+  return blob
 
 @app.route('/transcribe', methods=["GET", "POST"])
 def transcript():
