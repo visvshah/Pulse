@@ -74,6 +74,7 @@ const LandingPage = () => {
         const res2 = result2[0].message.content;
         console.log("Script: " + res2)
         setLoadingMessage("Created Video Script for Topic #" + (i + 1) + ": " + topic_name);
+        const params = new URLSearchParams({ text: res2 });
         const url = "http://localhost:5000/getvideo?" + params;
         const response3 = await fetch(url)
         console.log(response3);
@@ -290,7 +291,7 @@ const reallySetPresentation = async (p: string) => {
                 <p>.pdf or .pptx</p>
                 <input type="file" onChange={(e) => {
                   // setFile(e.target.files?.[0]);
-                  uploadAudio(e.target.files?.[0]);
+                  uploadSlides(e.target.files?.[0]);
                   setLoading(true);
                 }} />
               </div>
