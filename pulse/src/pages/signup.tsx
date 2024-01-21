@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { redirect } from 'next/navigation'
 import React, {useState} from 'react'
 import { auth } from '~/utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -39,14 +40,7 @@ const signOut = () => {
     setUser(null)
 }
 if (user != null) {
-    return (
-        <div className="flex h-[100vh] justify-center items-center">
-             <div className="flex h-full items-center justify-center w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                <button onClick={signOut} className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign Out</button>
-            </div>
-        </div>
-       
-    )
+    window.location.replace("/");      
 }
   return (
     <>

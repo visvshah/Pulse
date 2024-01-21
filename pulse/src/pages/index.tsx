@@ -247,7 +247,44 @@ const reallySetPresentation = async (p: string) => {
             </div>
         </>
     )
-  }  
+  } 
+  if (!user?.email) {
+    return (
+        <>
+        <Head>
+          <title>Home | Pulse</title>
+          <meta name="description" content="Make short form video content from lectures." />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <style jsx global>{`
+          body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ff4d6e; /* Vibrant pink background */
+            color: #fff; /* White text */
+          }
+        `}</style>
+        <style jsx global>{`
+          @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        `}</style>
+        <header className="h-[10vh] bg-[#ff4d6e] py-10">
+          <div className="container mx-auto flex items-center justify-between">
+            <h1 className="text-white text-4xl font-extrabold font-pacifico">PULSE</h1>
+            <nav className="flex space-x-10 text-l">
+              <a href="#" className="text-white hover:underline">Home</a>
+              <a href="/aboutus" className="text-white hover:underline">About Us</a>
+              <a href="/signup" className="text-white hover:underline">Sign In</a>
+            </nav>
+          </div>
+        </header>
+        <main className="h-[90vh] bg-gradient-to-b from-[#ff4d6e] to-[#2e026d]">
+          <div className="text-2xl flex flex-row h-full items-center justify-center">
+            Please log in or sign up first!
+          </div>
+        </main>
+      </>
+    )
+
+  }
   return (
     <>
       <Head>
@@ -271,7 +308,7 @@ const reallySetPresentation = async (p: string) => {
           <nav className="flex space-x-10 text-l">
             <a href="#" className="text-white hover:underline">Home</a>
             <a href="/aboutus" className="text-white hover:underline">About Us</a>
-            <a href="/signup" className="text-white hover:underline">Sign In</a>
+            <a href="/signup" className="text-white hover:underline">{!user ? "Sign In" : "Sign Out"}</a>
           </nav>
         </div>
       </header>
