@@ -224,7 +224,7 @@ const reallySetPresentation = async (p: string) => {
   return (
     <>
       <Head>
-        <title>PULSE</title>
+        <title>Home | Pulse</title>
         <meta name="description" content="Make short form video content from lectures." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -254,7 +254,7 @@ const reallySetPresentation = async (p: string) => {
             create short-form content from your lecture videos
           </p>
           <div className="flex gap-8 items-center">
-            <div className="bg-white/20 p-8 h-80 rounded-xl h-full">
+            <div className="bg-white/20 p-8 h-80 rounded-xl h-full hover:scale-105 transition-all duration-300 ease-out">
               {/* Your audio upload component goes here */}
               <label htmlFor="audioInput" className="text-white block mb-2 w-full text-center">
                 Upload Audio
@@ -271,16 +271,8 @@ const reallySetPresentation = async (p: string) => {
               </div>
             </div>
             <div className="text-white font text-xl">OR</div>
-            <div className="bg-white/20 p-8 rounded-xl h-full">
+            <div className="bg-white/20 p-8 rounded-xl h-full hover:scale-105 transition-all duration-300 ease-out">
               {/* Your PowerPoint upload component goes here */}
-              {/* <label htmlFor="pptInput" className="text-white block mb-2">
-                Upload PowerPoint (.pdf)
-              </label> */}
-              {/* <input type="file" id="pptInput" className="mt-2" onChange={(e) => {
-                  // setFile(e.target.files?.[0]);
-                  uploadSlides(e.target.files?.[0]);
-                  setLoading(true);
-                }}/> */}
 
               <label htmlFor="audioInput" className="text-white block mb-2 w-full text-center">
                 Upload PowerPoint
