@@ -12,7 +12,7 @@ On our web app, users can upload the given course lectures or slides (mp3 and pd
 
 To generate deepfakes of a few popular celebrities, we employ a modified version of this [Wav2Lip](https://github.com/Rudrabha/Wav2Lip?tab=readme-ov-file) implementation running on GPU-configured containers on [Modal Labs](https://modal.com/). This allows us to lip-sync with high accuracy and quality. Additionally, to make voice clones of those celebrities, we also use some few-shot prompting via [ElevenLab](https://elevenlabs.io/)'s API for text-to-speech. 
 
-![Meme](./pulse/public/flowchart.png)
+![Meme](./flowchart.png)
 
 We let students learn in their ways, and at their own pace with our content creation. Our videos keep students hooked with the graphics while letting them learn coursework. In the future, we to improve continuously through feedback mechanisms, enhanced interactivity, and staying attuned to emerging educational technologies.
 
