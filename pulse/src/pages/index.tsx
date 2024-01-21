@@ -86,13 +86,16 @@ const LandingPage = () => {
         const params = new URLSearchParams({ text: res2 });
         const url = "http://localhost:5000/getvideo?" + params;
         const response3 = await fetch(url)
-        console.log(response3);
 
+        console.log(JSON.stringify(response3));
+        const res3 = await response3.json();
+        console.log("Res3: " + JSON.stringify(res3));
+        console.log("Res3 URL: " + res3.url);
         const topic = {
           topic_name, 
           topic_summary,
           topic_script: res2,
-          video_link: response3,
+          video_link: res3.url,
         }
         lesson.topics.push(topic);
         setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);

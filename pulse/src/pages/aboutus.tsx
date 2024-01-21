@@ -31,7 +31,7 @@ export default function Page() {
         <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-white text-4xl font-extrabold font-pacifico">PULSE</h1>
           <nav className="flex space-x-10 text-l">
-            <a href="#" className="text-white hover:underline">Home</a>
+            <a href="/" className="text-white hover:underline">Home</a>
             <a href="/aboutus" className="text-white hover:underline">About Us</a>
             <a href="/signup" className="text-white hover:underline">Sign In</a>
           </nav>
