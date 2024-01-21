@@ -38,6 +38,20 @@ export default function Page() {
         </div>
       </header>
       <main className="h-[90vh] bg-gradient-to-b from-[#ff4d6e] to-[#2e026d]">
+        <div className="flex flex-row h-full gap-6 items-center mx-16">
+          <div>
+            <Image className='rounded-full' alt='soam' src={soam} />
+          </div>
+          <div>
+            <Image className='rounded-full' alt='visiv' src={visiv} />
+          </div>
+          <div>
+            <Image className='rounded-full' alt='mangla' src={mangla} />
+          </div>
+          <div>
+            <Image className='rounded-full' alt='saarang' src={saarang} />
+          </div>
+        </div>
       </main>
     </>
   );
