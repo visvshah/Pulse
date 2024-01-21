@@ -1,7 +1,7 @@
 from tiktokvoice import *
 import random
 
-def make_audio(script):
+def make_audio(script, vid_id):
 	voices = [   
 		'en_au_001',                  # English AU - Female
 		'en_au_002',                  # English AU - Male
@@ -16,5 +16,5 @@ def make_audio(script):
 		'en_us_007',                  # English US - Male 2
 		'en_us_007',                  # English US - Male 2
 	]
-	tts(script, voices[random.randint(0, len(voices)-1)], "./output/output.mp3")
-	return "./output/output.mp3"
+	tts(script, voices[random.randint(0, len(voices)-1)], f"./output/{vid_id}_output.mp3")
+	return f"./output/{vid_id}_output.mp3"

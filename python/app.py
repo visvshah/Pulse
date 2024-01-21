@@ -65,13 +65,13 @@ image_constants = {
 }
 
 
-def generate_audio(script):
-  audio = gTTS(text=script, lang='en', slow=False) 
-  audio.save("./output/output.mp3")
-  audio = AudioSegment.from_mp3("./output/output.mp3")
-  audio = audio.speedup(playback_speed=1.5)
-  audio.export("./output/output.mp3", format="mp3")
-  return "./output/output.mp3"
+# def generate_audio(script):
+#   audio = gTTS(text=script, lang='en', slow=False) 
+#   audio.save("./output/output.mp3")
+#   audio = AudioSegment.from_mp3("./output/output.mp3")
+#   audio = audio.speedup(playback_speed=1.5)
+#   audio.export("./output/output.mp3", format="mp3")
+#   return "./output/output.mp3"
 
 def audio_to_timestamp(file):
   f = modal.Function.lookup("wav2lip-simple", "Wav2LipModel.run_whisper")
@@ -80,7 +80,7 @@ def audio_to_timestamp(file):
   data = f.remote(input_audio_bytes)
   return data
 
-def edit_deepfake_video(filename, audio_file):
+def edit_deepfake_video(filename, audio_file, vid_id):
   audio = mp.AudioFileClip(audio_file)
   data = audio_to_timestamp(audio_file)["segments"]
   words = []
@@ -100,7 +100,7 @@ def edit_deepfake_video(filename, audio_file):
   width, height = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)), int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
   actual_height = int(width / target_aspect_ratio)
 
-  out = cv2.VideoWriter('./output/vertical_out.mp4',cv2.VideoWriter_fourcc(*'DIVX'), vid.get(cv2.CAP_PROP_FPS), (width, actual_height))
+  out = cv2.VideoWriter(f'./output/{vid_id}_vertical_out.mp4',cv2.VideoWriter_fourcc(*'DIVX'), vid.get(cv2.CAP_PROP_FPS), (width, actual_height))
   while vid.isOpened():
     flag, frame = vid.read()
     if not flag:
@@ -138,7 +138,7 @@ def resize_img(img, vidW):
   opencvImage = cv2.resize(opencvImage, (new_w, new_h))
   return Image.fromarray(opencvImage)
 
-def make_image(script, path_tweet, tweet, final_vid, sz = 34):
+def make_image(script, path_tweet, tweet, final_vid, vid_id, sz = 34):
   img = Image.open(path_tweet + tweet)
   draw = ImageDraw.Draw(img)
   
@@ -169,7 +169,7 @@ def make_image(script, path_tweet, tweet, final_vid, sz = 34):
     draw.text((x, y + j * 37), cur, fill=(0, 0, 0), font = font)
 
   img = resize_img(img.copy(), W)	
-  img.save("./output/" + "tweet" + ".jpg")
+  img.save(f"./output/{vid_id}_tweet.jpg")
 
 def partition_sentences(audio_file, img):
   data = audio_to_timestamp(audio_file)["segments"]
@@ -206,12 +206,12 @@ def partition_sentences(audio_file, img):
   return groups
 
 
-def add_tweet(final_vid, audio_file, path_tweet, tweet):
+def add_tweet(final_vid, audio_file, path_tweet, tweet, vid_id):
   groups = partition_sentences(audio_file, tweet)
   # print(groups)
-  out = cv2.VideoWriter('./output/test_out.mp4',cv2.VideoWriter_fourcc(*'DIVX'), final_vid.fps, (final_vid.w, final_vid.h))
+  out = cv2.VideoWriter(f"./output/{vid_id}_test_out.mp4",cv2.VideoWriter_fourcc(*'DIVX'), final_vid.fps, (final_vid.w, final_vid.h))
   curr = 1
-  vid = cv2.VideoCapture("./output/output.mp4")
+  vid = cv2.VideoCapture(f"./output/{vid_id}_output.mp4")
   while vid.isOpened():
     flag, frame = vid.read()
     if not flag:
@@ -222,19 +222,19 @@ def add_tweet(final_vid, audio_file, path_tweet, tweet):
     
     for [script, start, end] in groups:
       if start <= secs and secs <= end:
-        make_image(script, path_tweet, tweet, final_vid)
-        tweet_img = Image.open("./output/tweet.jpg")
+        make_image(script, path_tweet, tweet, final_vid, vid_id)
+        tweet_img = Image.open(f"./output/{vid_id}_tweet.jpg")
         img.paste(tweet_img, ((img.size[0] - tweet_img.size[0])//2, (img.size[1] - tweet_img.size[1])//2))
 
     img = numpy.array(img)
     out.write(img)
 
   out.release()
-  final_vid = mp.VideoFileClip('./output/test_out.mp4')
+  final_vid = mp.VideoFileClip(f"./output/{vid_id}_test_out.mp4")
 
   return final_vid
 
-def generate_deepfake(script):
+def generate_deepfake(script, vid_id):
     whichVoice = random.choice(voices)
     whichVideo = random.choice(voiceFiles[whichVoice])
     print(whichVoice, whichVideo)
@@ -256,27 +256,27 @@ def generate_deepfake(script):
       "xi-api-key": "9a3db95271bcc0aef2c8f83b770e97d3"
     }
     response = requests.request("POST", url, json=payload, headers=headers)
-    with open('./output/output.mp3', 'wb') as f:
+    with open(f'./output/{vid_id}_output.mp3', 'wb') as f:
       for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
           if chunk:
               f.write(chunk)
     f = modal.Function.lookup("wav2lip-simple", "Wav2LipModel.inference")
-    with open("./output/output.mp3", "rb") as audio_file:
+    with open(f"./output/{vid_id}_output.mp3", "rb") as audio_file:
         input_audio_bytes = audio_file.read()
     with open(vidPath, "rb") as video_file:
         input_video_bytes = video_file.read()
     out = f.remote(input_video_bytes, input_audio_bytes)
-    with open("./output/out.mp4", "wb") as f:
+    with open(f"./output/{vid_id}_out.mp4", "wb") as f:
         f.write(out)
-    edit_deepfake_video("./output/out.mp4", "./output/output.mp3")
-    audio = mp.AudioFileClip("./output/output.mp3")
-    final_vid = mp.VideoFileClip('./output/vertical_out.mp4')
+    edit_deepfake_video(f"./output/{vid_id}_out.mp4", f"./output/{vid_id}_output.mp3", vid_id)
+    audio = mp.AudioFileClip(f"./output/{vid_id}_output.mp3")
+    final_vid = mp.VideoFileClip(f"./output/{vid_id}_vertical_out.mp4")
     final_vid = final_vid.set_audio(audio)
-    final_vid.write_videofile("./output/output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
+    final_vid.write_videofile(f"./output/{vid_id}_output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
     return "done"
 
 
-def generate_brainrot(script):
+def generate_brainrot(script, vid_id):
   brainrots_tmp = os.listdir("brainrot")
   brainrots = []
   for x in brainrots_tmp:
@@ -286,7 +286,7 @@ def generate_brainrot(script):
   whichTweet = random.choice(["elon.jpg", "trump.png", "lebron.png"])
   print(whichBrainrot, whichTweet)
   meme = mp.VideoFileClip(whichBrainrot)
-  audio_file = make_audio(script)
+  audio_file = make_audio(script, vid_id)
   audio = mp.AudioFileClip(audio_file)
   reqd_duration = audio.duration
 
@@ -296,26 +296,33 @@ def generate_brainrot(script):
     final_vid = meme.loop(duration = audio.duration)
 
   final_vid = final_vid.set_audio(audio)
-  final_vid.write_videofile("./output/output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
+  final_vid.write_videofile(f"./output/{vid_id}_output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
 
-  final_vid = add_tweet(final_vid, audio_file, "tweets/", whichTweet)
+  final_vid = add_tweet(final_vid, audio_file, "tweets/", whichTweet, vid_id)
   final_vid = final_vid.set_audio(audio)
-  final_vid.write_videofile("./output/output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
+  final_vid.write_videofile(f"./output/{vid_id}_output.mp4", bitrate="2000k", audio_codec="aac", codec="h264_videotoolbox")
   return "done"
 
 @app.route('/getvideo', methods=["GET", "POST"])
 def getvideo():
   whichType = random.choice([0, 1])
-  if whichType == 0:
-    generate_brainrot(request.args.get("text"))
-  else:
-    generate_deepfake(request.args.get("text"))
   vid_id = uuid0.generate()
-  blob = upload_file("./output/output.mp4", f"videos/{vid_id}.mp4")
+  if whichType == 0:
+    generate_brainrot(request.args.get("text"), vid_id)
+  else:
+    generate_deepfake(request.args.get("text"), vid_id)
+  
+  blob = upload_file(f"./output/{vid_id}_output.mp4", f"videos/{vid_id}.mp4")
   # push to firebase
   out ={  
     "url": blob
   }  
+  for x in os.listdir("./output"):
+    if str(vid_id) in x:
+      path = os.path.join("./output", x) 
+      os.remove(path) 
+      print("%s has been removed successfully" % x) 
+  
   json_out = json.dumps(out, indent = 4) 
   return json_out
 
