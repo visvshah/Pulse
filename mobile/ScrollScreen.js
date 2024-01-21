@@ -13,7 +13,13 @@ import { Video, ResizeMode } from 'expo-av';
 // ];
 
 const ScrollScreen = ({route}) => {
-  const { videos } = route.params;
+  const { videos } = route.params
+  const temp = videos.map(video => video.video_link);
+  const titles = videos.map(video => video.topic_name);
+
+  useEffect(() => {
+    console.log(videos);
+  }, []);
 
   const user = auth.currentUser;
   const [currentViewableItemIndex, setCurrentViewableItemIndex] = useState(0);
@@ -37,9 +43,9 @@ const ScrollScreen = ({route}) => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={videos}
+        data={temp}
         renderItem={({ item, index }) => (
-          <VideoItem item={item} shouldPlay={index === currentViewableItemIndex} windowDimensions={windowDimensions} />
+          <VideoItem item={item} shouldPlay={index === currentViewableItemIndex} windowDimensions={windowDimensions} titles={titles} currentViewableItemIndex={currentViewableItemIndex} />
         )}
         keyExtractor={item => item}
         pagingEnabled
@@ -54,10 +60,10 @@ const ScrollScreen = ({route}) => {
         <Button title="Sign Out" onPress={handleSignOut} />
       </View>
     </View>
-  );
+  ); 
 };
 
-const VideoItem = ({ item, shouldPlay, windowDimensions }) => {
+const VideoItem = ({ item, shouldPlay, windowDimensions, titles, currentViewableItemIndex }) => {
   const videoRef = useRef(null);
   const [status, setStatus] = useState({});
 
@@ -73,19 +79,36 @@ const VideoItem = ({ item, shouldPlay, windowDimensions }) => {
   }, [shouldPlay]);
 
   return (
+    // <Pressable onPress={() => status.isPlaying ? videoRef.current?.pauseAsync() : videoRef.current?.playAsync()}>
+    //   <View style={{ width: windowDimensions.width, height: windowDimensions.height }}>
+    //   <Text style={styles.topicName}>{titles[shouldPlay ? currentViewableItemIndex : 0]}</Text>
+    //     <Video
+    //       ref={videoRef}
+    //       source={{ uri: item }}
+    //       style={styles.video}
+    //       isLooping
+    //       resizeMode={ResizeMode.COVER}
+    //       useNativeControls={false}
+    //       onPlaybackStatusUpdate={status => setStatus(() => status)}
+    //     />
+    //   </View>
+    // </Pressable>
     <Pressable onPress={() => status.isPlaying ? videoRef.current?.pauseAsync() : videoRef.current?.playAsync()}>
-      <View style={{ width: windowDimensions.width, height: windowDimensions.height }}>
-        <Video
-          ref={videoRef}
-          source={{ uri: item }}
-          style={styles.video}
-          isLooping
-          resizeMode={ResizeMode.COVER}
-          useNativeControls={false}
-          onPlaybackStatusUpdate={status => setStatus(() => status)}
-        />
+    <View style={{ width: windowDimensions.width, height: windowDimensions.height, position: 'relative' }}>
+      <Video
+        ref={videoRef}
+        source={{ uri: item }}
+        style={styles.video}
+        isLooping
+        resizeMode={ResizeMode.COVER}
+        useNativeControls={false}
+        onPlaybackStatusUpdate={status => setStatus(() => status)}
+      />
+      <View style={styles.overlayContainer}>
+        <Text style={styles.topicName}>{titles[shouldPlay ? currentViewableItemIndex : 0]}</Text>
       </View>
-    </Pressable>
+    </View>
+  </Pressable>
   );
 };
 
@@ -111,6 +134,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  overlayContainer: {
+    position: 'absolute',
+    top: 32,
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Translucent black background
+    padding: 10,
+    alignItems: 'center',
+
+  },
+  
+  topicName: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default ScrollScreen;

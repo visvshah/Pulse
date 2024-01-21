@@ -40,8 +40,9 @@ const LoggedInScreen = ({navigation}) => {
   const handleButtonPress = (topics) => {
     // Navigate to the ScrollScreen with l.topics as the prop
     // navigation.navigate('Scroll', { videos: l.topics });
-    const videoLinks = topics.map(topic => topic.video_link);
-    navigation.navigate('Scroll', { videos: videoLinks });
+    //const videoLinks = topics.map(topic => topic.video_link);
+    //const topicNames = topics.map(topic => topic.topic_name);
+    navigation.navigate('Scroll', { videos: topics});
   };
 
   
@@ -118,6 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 18, // Font size of the lesson name
     fontWeight: 'bold', // Bold text
   },
+  
 });
 
 
