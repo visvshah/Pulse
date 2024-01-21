@@ -4,6 +4,8 @@ import { useEdgeStore } from '../lib/edgestore';
 import { string } from "zod";
 import Head from 'next/head';
 import { Spinner} from '@chakra-ui/react';
+import { FaFileAudio } from "react-icons/fa";
+import { BsFiletypePpt } from "react-icons/bs";
 
 interface Summaries {
   topics: {
@@ -21,6 +23,7 @@ const LandingPage = () => {
   const { edgestore } = useEdgeStore();
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Test");
+  const [selectedName, setSelectedName] = useState("")
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,6 +74,13 @@ const LandingPage = () => {
         const res2 = result2[0].message.content;
         console.log("Script: " + res2)
         setLoadingMessage("Created Video Script for Topic #" + (i + 1) + ": " + topic_name);
+        const url = "http://localhost:5000/getvideo?" + params;
+        const response3 = await fetch(url)
+        console.log(response3);
+        setScript((prevScripts) => [
+          ...prevScripts,
+          { topic_name, topic_script: res2 },
+        ]);
         setScript((prevScripts) => [
           ...prevScripts,
           { topic_name, topic_script: res2 },
@@ -227,7 +237,7 @@ const reallySetPresentation = async (p: string) => {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
       `}</style>
-      <header className="bg-[#ff4d6e] py-4">
+      <header className="h-[10vh] bg-[#ff4d6e] py-10">
         <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-white text-4xl font-extrabold font-pacifico">PULSE</h1>
           <nav className="flex space-x-10 text-l">
@@ -237,34 +247,53 @@ const reallySetPresentation = async (p: string) => {
           </nav>
         </div>
       </header>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#ff4d6e] to-[#2e026d]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <p className="text-white text-2xl lg:text-3xl xl:text-4xl text-center">
-            Making short form content from lectures.
+      <main className="h-[90vh] bg-gradient-to-b from-[#ff4d6e] to-[#2e026d]">
+        <div className="flex flex-col h-full items-center justify-center gap-32 mx-32">
+          <p className="text-white text-2xl lg:text-6xl text-center font-semibold px-40">
+            create short-form content from your lecture videos
           </p>
-          <div className="flex gap-8">
-            <div className="bg-white/20 p-8 rounded-xl">
+          <div className="flex gap-8 items-center">
+            <div className="bg-white/20 p-8 h-80 rounded-xl h-full">
               {/* Your audio upload component goes here */}
-              <label htmlFor="audioInput" className="text-white block mb-2">
+              <label htmlFor="audioInput" className="text-white block mb-2 w-full text-center">
                 Upload Audio
               </label>
-              <input type="file" id="audioInput" className="mt-2" onChange={(e) => {
-            // setFile(e.target.files?.[0]);
-            uploadAudio(e.target.files?.[0]);
-            setLoading(true);
-          }}/>
+              <div className="flex flex-col items-center file-upload">
+                <FaFileAudio className="w-1/2 h-1/2 mb-4"/>
+                <h3> {selectedName || "Click icon to upload"}</h3>
+                <p>.wav or .mp3</p>
+                <input type="file" onChange={(e) => {
+                  // setFile(e.target.files?.[0]);
+                  uploadAudio(e.target.files?.[0]);
+                  setLoading(true);
+                }} />
+              </div>
             </div>
-            <div className="text-white font-bold text-2xl lg:text-3xl xl:text-4xl mt-8">OR</div>
-            <div className="bg-white/20 p-8 rounded-xl">
+            <div className="text-white font text-xl">OR</div>
+            <div className="bg-white/20 p-8 rounded-xl h-full">
               {/* Your PowerPoint upload component goes here */}
-              <label htmlFor="pptInput" className="text-white block mb-2">
+              {/* <label htmlFor="pptInput" className="text-white block mb-2">
+                Upload PowerPoint (.pdf)
+              </label> */}
+              {/* <input type="file" id="pptInput" className="mt-2" onChange={(e) => {
+                  // setFile(e.target.files?.[0]);
+                  uploadSlides(e.target.files?.[0]);
+                  setLoading(true);
+                }}/> */}
+
+              <label htmlFor="audioInput" className="text-white block mb-2 w-full text-center">
                 Upload PowerPoint
               </label>
-              <input type="file" id="pptInput" className="mt-2" onChange={(e) => {
-            // setFile(e.target.files?.[0]);
-            uploadSlides(e.target.files?.[0]);
-            setLoading(true);
-          }}/>
+              <div className="flex flex-col items-center file-upload">
+                <BsFiletypePpt className="w-1/2 h-1/2 mb-4"/>
+                <h3> {selectedName || "Click icon to upload"}</h3>
+                <p>.pdf or .pptx</p>
+                <input type="file" onChange={(e) => {
+                  // setFile(e.target.files?.[0]);
+                  uploadAudio(e.target.files?.[0]);
+                  setLoading(true);
+                }} />
+              </div>
             </div>
           </div>
         </div>

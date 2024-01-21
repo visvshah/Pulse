@@ -50,7 +50,7 @@ if (user != null) {
 }
   return (
     <>
-    <header className="bg-[#ff4d6e] py-4">
+    <header className="h-[10vh] bg-[#ff4d6e] py-10">
         <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-white text-4xl font-extrabold font-pacifico">PULSE</h1>
           <nav className="flex space-x-10 text-l">
@@ -59,7 +59,7 @@ if (user != null) {
           </nav>
         </div>
       </header>
-    <div className="flex h-screen bg-gradient-to-b from-[#ff4d6e] to-[#2e026d] justify-center items-center">
+    <div className="flex h-[90vh] bg-gradient-to-b from-[#ff4d6e] to-[#2e026d] justify-center items-center">
         
     <div className="w-full rounded-lg md:mt-0 sm:max-w-md">
     <style jsx global>{`

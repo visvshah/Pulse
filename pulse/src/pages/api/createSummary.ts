@@ -10,7 +10,7 @@ export const config = {
 };
 
 
-const prompt = 'You are a client that organizes information from college lecture transcripts. Given a transcript from a user, extract 5 essential topics and provide detailed summaries for each topic. Ensure that the summaries capture the key information and any important supporting information.  Ensure each topic summary us lengthy and at least 6 sentences long. You will output the response as a json in the following format: {"topics": {"topic_name": string, "topic_summary": string}[]}. '
+const prompt = 'You are a client that organizes information from college lecture transcripts. Given a transcript from a user, extract 5 essential topics and provide detailed summaries for each topic. Ensure that the summaries capture the key information and any important supporting information.  Ensure each topic summary us lengthy and at least 6 sentences long. You will output the response as a json in the following format: {"lesson_title": string, "topics": {"topic_name": string, "topic_summary": string}[]}. '
 
 const systemMessage = {
   role: "system",
