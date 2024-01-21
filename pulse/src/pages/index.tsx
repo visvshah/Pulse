@@ -7,6 +7,11 @@ import { Spinner} from '@chakra-ui/react';
 import { FaFileAudio } from "react-icons/fa";
 import { BsFiletypePpt } from "react-icons/bs";
 import { auth } from "~/utils/firebase";
+import { finished } from "stream";
+import Image from "next/image";
+import meme from '../../public/memeImage.jpeg';
+
+
 
 interface Summaries {
   lesson_title: string,
@@ -26,6 +31,7 @@ const LandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [selectedName, setSelectedName] = useState("")
+  const [finishedAll, setFinishedAll] = useState(false);
   const user = auth.currentUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +40,7 @@ const LandingPage = () => {
   };
 
   const createScripts = async(inp: string) => {
-    setLoadingMessage("File finished parsing! Loading key information...");
+    setLoadingMessage("File finished parsing! Extracting key information...");
     try {
       console.log("Creating Summaries of: "+ inp)
     const response = await fetch("/api/createSummary", {
@@ -64,6 +70,8 @@ const LandingPage = () => {
         userid: user?.email,
         topics: []
       }
+      let scripts_made = 0;
+      let videos_made = 0;
       
       const promises = summaries.map(async (summary, i) => {
         console.log("Topic #" + (i + 1));
@@ -84,8 +92,11 @@ const LandingPage = () => {
           const result2 = await response2.json();
           const res2 = result2[0].message.content;
           console.log("Script: " + res2);
-    
-          setLoadingMessage("Created Video Script for Topic #" + (i + 1) + ": " + topic_name);
+          scripts_made++;
+          setLoadingMessage("Created " + scripts_made + "/" + summaries.length + " scripts");
+          if (scripts_made == summaries.length) {
+            setLoadingMessage("Created " + videos_made + "/" + summaries.length + " videos");
+          }
           const params = new URLSearchParams({ text: res2 });
           const url = "http://localhost:5000/getvideo?" + params;
     
@@ -104,7 +115,9 @@ const LandingPage = () => {
           };
     
           lesson.topics.push(topic);
-          setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);
+          videos_made++;
+          setLoadingMessage("Created " + videos_made + "/" + summaries.length + " videos");
+          // setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);
     
           setScript((prevScripts) => [
             ...prevScripts,
@@ -130,7 +143,9 @@ const LandingPage = () => {
   } catch (error) {
     console.error("Error:", error);
   }
+  setFinishedAll(true);
   setLoadingMessage("Finsihed Creating All Videos!");
+
 }
 
 const reallySetPresentation = async (p: string) => {
@@ -231,7 +246,7 @@ const reallySetPresentation = async (p: string) => {
   
     }
   }
-  if (loading) {
+  if (!loading) {
     return (
       <>
            <div className = "flex flex-col h-screen bg-gradient-to-b from-[#ff4d6e] to-[#2e026d] text-white p-7 items-center justify-center">
@@ -244,18 +259,32 @@ const reallySetPresentation = async (p: string) => {
       `}</style>
               <div className="flex flex-col items-center justify-center w-48">
                 <div className = "flex flex-row items-center justify-center gap-8">
-                  <div className="relative h-4 w-4 animate-bounce">
-                    <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
-                  </div>
-                  <div className="relative h-4 w-4 animate-bounce">
-                    <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
-                  </div>
-                  <div className="relative h-4 w-4 animate-bounce">
-                    <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
-                  </div>
-                </div>
-                <p className="m-5 w-48 text-center">{loadingMessage}</p>
+                  {finishedAll ? (
+                    <>
+                      <div className="relative h-4 w-4 animate-bounce">
+                        <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
+                      </div>
+                      <div className="relative h-4 w-4 animate-bounce">
+                        <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
+                      </div>
+                      <div className="relative h-4 w-4 animate-bounce">
+                        <div className="h-6 w-6 animate-pulse rounded-full bg-white"></div>
+                      </div>
+                      <p className="m-5 w-48 text-center">{loadingMessage}</p>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center">
+                      <p className="m-5 w-48 text-2xl text-center">{loadingMessage}</p>
+                      
+                      <div>
+                      <Image alt='soam' src={meme} />
+                    </div>
+                    </div>
+                  )}
+                  
+                
               </div>
+            </div>
             </div>
         </>
     )
