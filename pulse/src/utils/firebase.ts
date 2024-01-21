@@ -2,6 +2,7 @@ import firebase from "firebase/app"
 import { initializeApp } from "firebase/app";
 import "firebase/auth"
 import { getAuth } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { env } from "~/env.js";

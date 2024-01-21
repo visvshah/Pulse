@@ -22,7 +22,7 @@ image = (
 
 stub = Stub("wav2lip-simple", image=image)
 
-@stub.cls(gpu=gpu.A10G(), container_idle_timeout=240)
+@stub.cls(gpu=modal.gpu.A100(memory=80), container_idle_timeout=240)
 class Wav2LipModel:
     def __enter__(self):
         self.setup_dependencies()
@@ -32,7 +32,6 @@ class Wav2LipModel:
         self.whisper_model = whisper.load_model("base")
         return 0
 
-    @method()
     def inference(self, video_bytes: bytes, audio_bytes: bytes) -> bytes:
         video_path = '/tmp/video.mp4'
         audio_path = '/tmp/audio.mp3'
@@ -56,8 +55,6 @@ class Wav2LipModel:
         # with open("temp/faulty_frame.jpg", 'rb') as output_file:
         #     result_video_bytes = output_file.read()
         # return result_video_bytes
-
-        
     
     @method()
     def run_whisper(self, audio_bytes: bytes) -> dict:
@@ -65,24 +62,19 @@ class Wav2LipModel:
         with open(audio_path, 'wb') as audio_file:
             audio_file.write(audio_bytes)
         return self.whisper_model.transcribe(audio_path)
-        
 
-# @stub.local_entrypoint()
-# def main(
-#     video_path="/Users/sarthakmangla/code/Pulse/python/deepfakes/serena/serena_video1.mp4",
-#     audio_path="/Users/sarthakmangla/code/Pulse/python/output.mp3",
-# ):
-    
+@stub.local_entrypoint()
+def main(
+    video_path="/Users/sarthakmangla/code/Pulse/python/deepfakes/serena/serena_video1.mp4",
+    audio_path="/Users/sarthakmangla/code/Pulse/python/output/output.mp3",
+):
+    with open(video_path, "rb") as video_file:
+        input_video_bytes = video_file.read()
+    with open(audio_path, "rb") as audio_file:
+        input_audio_bytes = audio_file.read()
+    output_video_bytes = Wav2LipModel().inference.remote(input_video_bytes, input_audio_bytes)
 
-#     with open(video_path, "rb") as video_file:
-#         input_video_bytes = video_file.read()
-#     with open(audio_path, "rb") as audio_file:
-#         input_audio_bytes = audio_file.read()
-#     output_video_bytes = Wav2LipModel().inference.remote(
-#         input_video_bytes, input_audio_bytes)
-
-
-#     output_path = Path(__file__).parent / "out.mp4"
-#     print(f"Saving it to {output_path}")
-#     with open(output_path, "wb") as f:
-#         f.write(output_video_bytes)
+    output_path = Path(__file__).parent / "out.mp4"
+    print(f"Saving it to {output_path}")
+    with open(output_path, "wb") as f:
+        f.write(output_video_bytes)

@@ -1,3 +1,4 @@
-python/deepfakes
+python/output
 python/__pycache__
 python/.env
+python/accountKey.json

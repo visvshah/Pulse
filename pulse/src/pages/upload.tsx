@@ -1,13 +1,18 @@
-'use client';
- 
+//@ts-nocheck
 import * as React from 'react';
 import { useEdgeStore } from '../lib/edgestore';
+import { db} from '~/utils/firebase';
+import { collection, getDocs } from "firebase/firestore";
  
 export default function Page() {
   const [file, setFile] = React.useState<File>();
   const { edgestore } = useEdgeStore();
   //const [url, setUrl] = React.useState<string>();
- 
+  // const db = app.firestore();
+  // const [lessons, lessonsLoading, lessonsError] = useCollection(
+  //   db.collection("lessons"),
+  //   {}
+  // );
   return (
     <div>
       <input
@@ -18,7 +23,47 @@ export default function Page() {
       />
       <button
         onClick={async () => {
-          if (file) {
+          const res = await fetch("api/createLesson", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              "topics": [
+                {
+                  "topic_name": "Computer Science",
+                  "topic_summary": "Programming basics",
+                  "topic_script": "Learn the fundamentals of programming and coding.",
+                  "video_link": "https://example.com/computer_science_video"
+                },
+                {
+                  "topic_name": "Geography",
+                  "topic_summary": "World geography",
+                  "topic_script": "Explore the geography of different countries and continents.",
+                  "video_link": "https://example.com/geography_video"
+                }
+              ],
+              "userid": "user3@example.com"
+            }),
+          });
+          const json = await res.json();
+          console.log(json);
+          // console.log(lessons);
+          //   const lessonsRef = sRef(db, 'lessons')
+            
+          // console.log("Lessons ref: " + lessonsRef)
+          // get(lessonsRef).then((snapshot) => {
+          //   if (snapshot.exists()) {
+          //     console.log("Works!");
+          //     console.log(snapshot.val());
+          //   } else {
+          //     console.log("No data available");
+          //   }
+          // }).catch((error) => {
+          //   console.error(error);
+          // }
+          // );
+          if (false) {
             const res = await edgestore.publicFiles.upload({
               file,
               onProgressChange: (progress) => {

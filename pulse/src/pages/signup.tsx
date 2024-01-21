@@ -40,19 +40,37 @@ const signOut = () => {
 }
 if (user != null) {
     return (
-        <div className="flex justify-center items-center">
-             <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <button onClick={signOut} className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign Out</button>
-        </div>
+        <div className="flex h-[100vh] justify-center items-center">
+             <div className="flex h-full items-center justify-center w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                <button onClick={signOut} className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign Out</button>
+            </div>
         </div>
        
     )
 }
   return (
-    <div className="flex justify-center items-center">
-    <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+    <>
+    <header className="bg-[#ff4d6e] py-4">
+        <div className="container mx-auto flex items-center justify-between">
+          <h1 className="text-white text-4xl font-extrabold font-pacifico">PULSE</h1>
+          <nav className="flex space-x-10 text-l">
+            <a href="/" className="text-white hover:underline">Home</a>
+            <a href="/aboutus" className="text-white hover:underline">About Us</a>
+          </nav>
+        </div>
+      </header>
+    <div className="flex h-screen bg-gradient-to-b from-[#ff4d6e] to-[#2e026d] justify-center items-center">
+        
+    <div className="w-full rounded-lg md:mt-0 sm:max-w-md">
+    <style jsx global>{`
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #ff4d6e; /* Vibrant pink background */
+          color: #fff; /* White text */
+        }
+      `}</style>
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              <h1 className="text-xl font-bold leading-tight tracking-tight text-black md:text-2xl dark:text-white">
                   {(signUp) ? "Sign Up" : "Sign In"}
               </h1>
               <form onSubmit={submitForm} className="space-y-4 md:space-y-6" action="#">
@@ -67,11 +85,12 @@ if (user != null) {
             
                   <button type="submit" className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">{(signUp) ? "Sign Up" : "Sign In"}</button>
               </form>
-              <p onClick={()=>changeSignUp(!signUp)} className="text-sm justify-center font-light text-gray-500 dark:text-gray-400">
+              <p onClick={()=>changeSignUp(!signUp)} className="text-sm justify-center font-light text-white">
                      <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500">{(signUp) ? "Sign In Instead" : "Sign Up Instead"}</a>
             </p>
           </div>
     </div>
     </div>
+    </>
   )
 }
