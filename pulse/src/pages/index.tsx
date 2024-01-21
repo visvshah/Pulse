@@ -214,7 +214,7 @@ const reallySetPresentation = async (p: string) => {
     <>
       <Head>
         <title>PULSE</title>
-        <meta name="description" content="Making short form content from lectures." />
+        <meta name="description" content="Make short form video content from lectures." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <style jsx global>{`
@@ -233,6 +233,7 @@ const reallySetPresentation = async (p: string) => {
           <nav className="flex space-x-10 text-l">
             <a href="#" className="text-white hover:underline">Home</a>
             <a href="/aboutus" className="text-white hover:underline">About Us</a>
+            <a href="/signup" className="text-white hover:underline">Sign In</a>
           </nav>
         </div>
       </header>
