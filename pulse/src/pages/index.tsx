@@ -64,52 +64,61 @@ const LandingPage = () => {
         userid: user?.email,
         topics: []
       }
-      for (let i = 0; i < summaries.length; i++) {
+      
+      const promises = summaries.map(async (summary, i) => {
         console.log("Topic #" + (i + 1));
-        const topic_name = summaries[i]?.topic_name as string;
-        const topic_summary = summaries[i]?.topic_summary as string;
+        const topic_name = summary?.topic_name as string;
+        const topic_summary = summary?.topic_summary as string;
         console.log("Name: " + topic_name);
         console.log("Summary: " + topic_summary);
-        
-
-        const response2 = await fetch("/api/createScripts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ topic_name, topic_summary }) ,
-        });
-        const result2 = await response2.json();
-        const res2 = result2[0].message.content;
-        console.log("Script: " + res2)
-        setLoadingMessage("Created Video Script for Topic #" + (i + 1) + ": " + topic_name);
-        const params = new URLSearchParams({ text: res2 });
-        const url = "http://localhost:5000/getvideo?" + params;
-        const response3 = await fetch(url)
-
-        console.log(JSON.stringify(response3));
-        const res3 = await response3.json();
-        console.log("Res3: " + JSON.stringify(res3));
-        console.log("Res3 URL: " + res3.url);
-        const topic = {
-          topic_name, 
-          topic_summary,
-          topic_script: res2,
-          video_link: res3.url,
+    
+        try {
+          const response2 = await fetch("/api/createScripts", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ topic_name, topic_summary }),
+          });
+    
+          const result2 = await response2.json();
+          const res2 = result2[0].message.content;
+          console.log("Script: " + res2);
+    
+          setLoadingMessage("Created Video Script for Topic #" + (i + 1) + ": " + topic_name);
+          const params = new URLSearchParams({ text: res2 });
+          const url = "http://localhost:5000/getvideo?" + params;
+    
+          const response3 = await fetch(url);
+          console.log(JSON.stringify(response3));
+    
+          const res3 = await response3.json();
+          console.log("Res3: " + JSON.stringify(res3));
+          console.log("Res3 URL: " + res3.url);
+    
+          const topic = {
+            topic_name,
+            topic_summary,
+            topic_script: res2,
+            video_link: res3.url,
+          };
+    
+          lesson.topics.push(topic);
+          setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);
+    
+          setScript((prevScripts) => [
+            ...prevScripts,
+            { topic_name, topic_script: res2 },
+          ]);
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle errors if necessary
         }
-        lesson.topics.push(topic);
-        setLoadingMessage("Created Video for Topic #" + (i + 1) + ": " + topic_name);
-        setScript((prevScripts) => [
-          ...prevScripts,
-          { topic_name, topic_script: res2 },
-        ]);
-        setScript((prevScripts) => [
-          ...prevScripts,
-          { topic_name, topic_script: res2 },
-        ]);
+      });
+    
+      // Wait for all promises to resolve
+      await Promise.all(promises);
 
-
-      }
       const dbres = await fetch("api/createLesson", {
         method: "POST",
         headers: {
