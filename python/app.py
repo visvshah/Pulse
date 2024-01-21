@@ -77,7 +77,8 @@ def audio_to_timestamp(file):
   f = modal.Function.lookup("wav2lip-simple", "Wav2LipModel.run_whisper")
   with open(file, "rb") as audio_file:
     input_audio_bytes = audio_file.read()
-  data = f.remote(input_audio_bytes)
+  curr_uuid = str(uuid0.generate())
+  data = f.remote(input_audio_bytes, curr_uuid)
   return data
 
 def edit_deepfake_video(filename, audio_file, vid_id):
@@ -265,7 +266,7 @@ def generate_deepfake(script, vid_id):
         input_audio_bytes = audio_file.read()
     with open(vidPath, "rb") as video_file:
         input_video_bytes = video_file.read()
-    out = f.remote(input_video_bytes, input_audio_bytes)
+    out = f.remote(input_video_bytes, input_audio_bytes, str(vid_id))
     with open(f"./output/{vid_id}_out.mp4", "wb") as f:
         f.write(out)
     edit_deepfake_video(f"./output/{vid_id}_out.mp4", f"./output/{vid_id}_output.mp3", vid_id)
@@ -343,7 +344,8 @@ def transcript():
     input_audio_bytes = response.content
     # Now you can use input_audio_bytes in your Wav2LipModel
     f = modal.Function.lookup("wav2lip-simple", "Wav2LipModel.run_whisper")
-    return f.remote(input_audio_bytes)
+    curr_uuid = str(uuid0.generate())
+    return f.remote(input_audio_bytes, curr_uuid)
 
 @app.route('/', methods=["GET"])
 def home():

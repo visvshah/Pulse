@@ -9,6 +9,9 @@ from models import Wav2Lip
 import audio
 from datetime import datetime
 import shutil
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--id', help='vid id')
 
 
 class Processor:
@@ -307,5 +310,6 @@ class Processor:
 
 if __name__ == "__main__":
     processor = Processor()
-    processor.run("/tmp/video.mp4", "/tmp/audio.mp3", "/tmp/result_voice.mp4")
+    args = parser.parse_args()
+    processor.run(f"/tmp/{args.id}_video.mp4", f"/tmp/{args.id}_audio.mp3", f"/tmp/{args.id}_result_voice.mp4")
     
