@@ -23,12 +23,9 @@ export default function Page() {
       />
       <button
         onClick={async () => {
-          const lessonsRef = collection(db, "lessons");
-          getDocs(lessonsRef).then((snapshot) => {
-            snapshot.docs.forEach((doc) => {
-              console.log(doc.data());
-            });
-          });
+          const res = await fetch("http://localhost:3000/api/pullLessons");
+          const json = await res.json();
+          console.log(json);
           // console.log(lessons);
           //   const lessonsRef = sRef(db, 'lessons')
             
