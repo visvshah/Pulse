@@ -18,4 +18,6 @@ We let students learn in their ways, and at their own pace with our content crea
 
 With Pulse, we bring the education to you. 
 
+[![Intro Video](http://img.youtube.com/vi/Pg4fRFjmaZY/0.jpg)](https://youtu.be/Pg4fRFjmaZY "Video Title")
+
 ![Meme](./pulse/public/WhyNotBothMeme.png)
